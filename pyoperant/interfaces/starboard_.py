@@ -8,18 +8,18 @@ from pyoperant import utils, InterfaceError
 
 stbd_port_dir = "/sys/class/leds/"
 stbd_port_dict = {
-                    "0": "starboard\:center\:blue/",
-                    "1": "starboard\:center\:green/",
-                    "2": "starboard\:center\:red/",
-                    "3": "starboard\:left\:blue/",
-                    "4": "starboard\:left\:green/",
-                    "5": "starboard\:left\:red/",
-                    "6": "starboard\:right\:blue/",
-                    "7": "starboard\:right\:green/",
-                    "8": "starboard\:right\:red/",
-                    "9": "starboard\:hopper\:left/",
-                    "10": "starboard\:hopper\:right/",
-                    "11": "starboard\::lights/"
+                    0: "starboard:center:blue/",
+                    1: "starboard:center:green/",
+                    2: "starboard:center:red/",
+                    3: "starboard:left:blue/",
+                    4: "starboard:left:green/",
+                    5: "starboard:left:red/",
+                    6: "starboard:right:blue/",
+                    7: "starboard:right:green/",
+                    8: "starboard:right:red/",
+                    9: "starboard:hopper:left/",
+                    10: "starboard:hopper:right/",
+                    11: "starboard::lights/"
 }
 
 class StarboardInterface(base_.BaseInterface):
@@ -71,7 +71,7 @@ class StarboardInterface(base_.BaseInterface):
         fname = join(stbd_port_dir, stbd_port_dict[channel], 'brightness')
         try:
             with open(fname, 'w') as fd:
-                fd.write(value)
+                fd.write(str(value))
                 return True
         except IOError:
             raise InterfaceError('Could not write to Starboard Port "%s" with value %d' % (channel, value))
