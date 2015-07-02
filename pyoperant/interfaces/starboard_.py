@@ -1,4 +1,3 @@
-import comedi
 import subprocess, datetime
 from os.path import join
 from pyoperant.interfaces import base_
@@ -40,29 +39,24 @@ class StarboardInterface(base_.BaseInterface):
         return True
 
     def _config_write(self,channel):
-
         return True
 
     def _read_bool(self, channel):
         """ read from Starboard port
         """
-        (s,v) = comedi.comedi_dio_read(self.device,subdevice,channel)
-        if s:
-            return (not v)
-        else:
-            raise InterfaceError('could not read from comedi device "%s", subdevice %s, channel %s' % (self.device,subdevice,channel))
+	pass
 
     def _poll(self,subdevice,channel,timeout=None):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
         date_fmt = '%Y-%m-%d %H:%M:%S.%f'
-        cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
-        poll_command = utils.Command(cmd)
-        status, output, error = poll_command.run(timeout=timeout)
-        if status < 0:
-            return None
-        else:
-            timestamp = output
-            return datetime.datetime.strptime(timestamp.strip(),date_fmt)
+        #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
+        #poll_command = utils.Command(cmd)
+        #status, output, error = poll_command.run(timeout=timeout)
+        #if status < 0:
+        #    return None
+        #else:
+        #    timestamp = output
+        #    return datetime.datetime.strptime(timestamp.strip(),date_fmt)
 
     def _write_bool(self,channel,value):
         """Write to Starboard port
