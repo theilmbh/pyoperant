@@ -8,17 +8,17 @@ from pyoperant import utils, InterfaceError
 
 stbd_port_dir = "/sys/class/leds/"
 stbd_port_dict = {
-                    "0": "starboard\:center\:blue/"
-                    "1": "starboard\:center\green/:"
-                    "2": "starboard\:center\:red/"
-                    "3": "starboard\:left\:blue/"
-                    "4": "starboard\:left\green/:"
-                    "5": "starboard\:left\:red/"
-                    "6": "starboard\:right\:blue/"
-                    "7": "starboard\:right\green/:"
-                    "8": "starboard\:right\:red/"
-                    "9": "starboard\:hopper\:left/"
-                    "10": "starboard\:hopper\:right/"
+                    "0": "starboard\:center\:blue/",
+                    "1": "starboard\:center\:green/",
+                    "2": "starboard\:center\:red/",
+                    "3": "starboard\:left\:blue/",
+                    "4": "starboard\:left\:green/",
+                    "5": "starboard\:left\:red/",
+                    "6": "starboard\:right\:blue/",
+                    "7": "starboard\:right\:green/",
+                    "8": "starboard\:right\:red/",
+                    "9": "starboard\:hopper\:left/",
+                    "10": "starboard\:hopper\:right/",
                     "11": "starboard\::lights/"
 }
 
