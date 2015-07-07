@@ -32,12 +32,10 @@ class StarboardInterface(base_.BaseInterface):
         self.open()
 
     def open(self):
-        self.starboard_event_fd = open('/dev/input/event2')
-        self.starboard_poller = select.poll()
-        self.starboard_poller.register(self.starboard_event_fd)
+        pass
 
     def close(self):
-        self.starboard_event_fd.close()
+        pass
 
     def _config_read(self,channel):
         return True
@@ -54,14 +52,18 @@ class StarboardInterface(base_.BaseInterface):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
         date_fmt = '%Y-%m-%d %H:%M:%S.%f'
 
-        if self.starboard_poller.poll(timeout):
-            event_data = self.starboard_event_fd.read(16)
-            self.starboard_event_fd.read(16) #discard debounce
-            event_code = ord(event_data[10])
-            event_dir = "down" if ord(event_data[12]) else "up"
-            return event_code
-        else:
-            return None
+       
+        with open('/dev/input/event2') as event_fd:
+            starboard_poller = select.poll()
+            starboard_poller.register(event_fd)
+            if self.starboard_poller.poll(timeout):
+                event_data = event_fd.read(16)
+                event_fd.read(16) #discard debounce
+                event_code = ord(event_data[10])
+                event_dir = "down" if ord(event_data[12]) else "up"
+                return event_code
+            else:
+                return None
 
 
         #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
