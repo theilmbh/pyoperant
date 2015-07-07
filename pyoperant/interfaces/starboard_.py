@@ -2,10 +2,12 @@ import subprocess, datetime
 from os.path import join
 from pyoperant.interfaces import base_
 from pyoperant import utils, InterfaceError
+import select
 
 
 
 stbd_port_dir = "/sys/class/leds/"
+stbd_input_dev = "/dev/input/"
 stbd_port_dict = {
                     0: "starboard:center:blue/",
                     1: "starboard:center:green/",
@@ -30,10 +32,12 @@ class StarboardInterface(base_.BaseInterface):
         self.open()
 
     def open(self):
-        pass
+        self.starboard_event_fd = open('/dev/input/event2')
+        self.starboard_poller = select.poll()
+        self.starboard_poller.register(self.starboard_event_fd)
 
     def close(self):
-        pass
+        self.starboard_event_fd.close()
 
     def _config_read(self,channel):
         return True
@@ -49,6 +53,17 @@ class StarboardInterface(base_.BaseInterface):
     def _poll(self,subdevice,channel,timeout=None):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
         date_fmt = '%Y-%m-%d %H:%M:%S.%f'
+
+        if self.starboard_poller.poll(timeout):
+            event_data = self.starboard_event_fd.read(16)
+            self.starboard_event_fd.read(16) #discard debounce
+            event_code = ord(event_data[10])
+            event_dir = "down" if ord(event_data[12]) else "up"
+            return event_code
+        else:
+            return None
+
+
         #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
         #poll_command = utils.Command(cmd)
         #status, output, error = poll_command.run(timeout=timeout)
