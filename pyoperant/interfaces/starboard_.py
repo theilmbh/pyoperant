@@ -54,6 +54,7 @@ class StarboardInterface(base_.BaseInterface):
 
        
         with open('/dev/input/event2') as event_fd:
+            print(event_fd)
             starboard_poller = select.poll()
             starboard_poller.register(event_fd)
             poll_out = starboard_poller.poll(timeout)
