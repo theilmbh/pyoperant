@@ -3,6 +3,7 @@ from os.path import join
 from pyoperant.interfaces import base_
 from pyoperant import utils, InterfaceError
 import select
+import signal
 
 
 
@@ -52,24 +53,33 @@ class StarboardInterface(base_.BaseInterface):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
         date_fmt = '%Y-%m-%d %H:%M:%S.%f'
 
-       
+        signal.signal(signal.SIGALRM, self.timeout_handler)
+        signal.alarm(timeout)
+
         with open('/dev/input/event2') as event_fd:
-            print(event_fd)
-            starboard_poller = select.poll()
-            starboard_poller.register(event_fd)
-            poll_out = starboard_poller.poll(timeout)
-            print(poll_out)
-            if poll_out:
-                
-                event_data = event_fd.read(16)
-                #event_fd.read(16) #discard debounce
-                event_code = ord(event_data[10])
-                event_dir = "down" if ord(event_data[12]) else "up"
-                return event_code
-            else:
-                return None
+            event_data = event_fd.read(16)
+            signal.alarm(0)
+            return event_data
+       
+        #with open('/dev/input/event2') as event_fd:
+        #    print(event_fd)
+        #    starboard_poller = select.poll()
+        #    starboard_poller.register(event_fd)
+        #    poll_out = starboard_poller.poll(timeout)
+        #    print(poll_out)
+        #    if poll_out:
+        #        
+        #        event_data = event_fd.read(16)
+        #        #event_fd.read(16) #discard debounce
+        #        event_code = ord(event_data[10])
+        #        event_dir = "down" if ord(event_data[12]) else "up"
+        #        return event_code
+        #    else:
+        #        return None
 
+    def timeout_handler(signum, frame):
 
+        return None
         #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
         #poll_command = utils.Command(cmd)
         #status, output, error = poll_command.run(timeout=timeout)
