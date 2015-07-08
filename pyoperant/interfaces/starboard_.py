@@ -77,7 +77,7 @@ class StarboardInterface(base_.BaseInterface):
         #    else:
         #        return None
 
-    def timeout_handler(signum, frame):
+    def timeout_handler(self, signum, frame):
 
         return None
         #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
