@@ -4,6 +4,7 @@ from pyoperant.interfaces import base_
 from pyoperant import utils, InterfaceError
 import select
 import signal
+import evdev
 
 
 
@@ -33,7 +34,9 @@ class StarboardInterface(base_.BaseInterface):
         self.open()
 
     def open(self):
-        pass
+        dev_names = [evdev.InputDevice(fn).name for fn in evdev.list_devices()]
+        self.peck_port_dev = evdev.InputDevice('/dev/input/event2')
+        self.hopdet_dev = evdev.InputDevice('/dev/input/event1')
 
     def close(self):
         pass
@@ -47,19 +50,16 @@ class StarboardInterface(base_.BaseInterface):
     def _read_bool(self, channel):
         """ read from Starboard port
         """
-	pass
+        active_keys = self.peck_port_dev.active_keys()
+        return channel in active_keys
+
+	
 
     def _poll(self,subdevice,channel,timeout=None):
         """ runs a loop, querying for pecks. returns peck time or "GoodNite" exception """
         date_fmt = '%Y-%m-%d %H:%M:%S.%f'
 
-        signal.signal(signal.SIGALRM, self.timeout_handler)
-        signal.alarm(timeout)
 
-        with open('/dev/input/event2') as event_fd:
-            event_data = event_fd.read(16)
-            signal.alarm(0)
-            return event_data
        
         #with open('/dev/input/event2') as event_fd:
         #    print(event_fd)
@@ -77,10 +77,6 @@ class StarboardInterface(base_.BaseInterface):
         #    else:
         #        return None
 
-    def timeout_handler(self, signum, frame):
-        with open('/dev/input/event2', 'rw') as event_fd1:
-            event_fd1.write(0)
-        return None
         #cmd = ['comedi_poll', self.device_name, '-s', str(subdevice), '-c', str(channel)]
         #poll_command = utils.Command(cmd)
         #status, output, error = poll_command.run(timeout=timeout)
